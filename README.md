@@ -17,3 +17,7 @@ To run our project execute the frontend and backend simultaneously using the com
 npm ci<br />
 npm run dev<br />
 in two terminals for frontend and backend respectively.
+<br />
+ [Video Demo](https://drive.google.com/file/d/1o6-DTmY1G4Vg9hupt-_fYEGNe_-5KY4A/view?usp=sharing)
+ <br/>
+ [Presentation](https://drive.google.com/file/d/1ZnS-MSp5GyRGQp9znCnszX54cIf34HPO/view?usp=sharing)
