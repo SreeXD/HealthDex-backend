@@ -14,6 +14,17 @@ const firebaseApp = initializeApp({
     credential: admin.credential.cert(serviceAccount)
 })
 
+const getUrl = async (name) => {
+    const file = getStorage()
+        .bucket('gs://hash-39f73.appspot.com')
+        .file(name)
+
+    return (await file.getSignedUrl({
+        action: 'read',
+        expires: '03-09-2491'
+    }))[0]
+}
+
 getStorage(firebaseApp)
 getAuth(firebaseApp)
 getFirestore(firebaseApp)
@@ -59,7 +70,40 @@ app.get('/patient/:patientId/docs', authMiddleware, async (req, res) => {
         ret.push(data)
     })
 
+    for (const x of ret) {
+        x.url = await getUrl(x.fileName)
+    }
+
     res.status(200).json(ret)
+})
+
+app.get('/me/docs', authMiddleware, async (req, res) => {
+    const patientId = req.session.uid
+
+    const files = await getFirestore()
+        .collection('patientFiles')
+        .where('patient', '==', patientId)
+        .get()
+
+    const ret = []
+
+    files.forEach(x => {
+        const data = x.data()
+        ret.push(data)
+    })
+
+    for (const x of ret) {
+        x.url = await getUrl(x.fileName)
+    }
+
+    res.status(200).json(ret)
+})
+
+app.post('/registerAsDoctor', authMiddleware, async (req, res) => {
+    const uid = req.session.uid 
+    await getAuth().setCustomUserClaims(uid, { doctor: true })
+
+    res.status(200).end()
 })
 
 app.listen(process.env.PORT, () => {
